@@ -152,8 +152,9 @@ print()
 #PREGUNTA6
 from tensorflow.keras.applications import VGG16
 
-# Cargar el modelo VGG16 pre-entrenado
-vgg16_model = VGG16(weights='imagenet', include_top=True)
+# Cargar el modelo VGG16 pre-entrenado Y no cargo las capas de clasificación 
+# como en el ejemplo anterior (colab de muestra)
+vgg16_model = VGG16(weights='imagenet', include_top=False)
 
 # Mostrar un resumen de las capas del modelo
 vgg16_model.summary()
@@ -166,13 +167,20 @@ from tensorflow.keras.applications.vgg16 import preprocess_input
 vgg16_model.trainable = False
 
 # Extraer la capa de preprocesamiento
+pre_layer = vgg16_model.
 preprocess_layer = vgg16_model.layers[0]
 
 # Verificar que la capa extraída sea la capa de preprocesamiento
 assert preprocess_layer.name == 'input_1'
 
 # Ver un resumen de la capa de preprocesamiento
-preprocess_layer.summary()
+print(preprocess_layer)
+# Ver un resumen de la capa de preprocesamiento
+print("Capa de preprocesamiento (input layer) resumen:")
+print("Nombre:", preprocess_layer.name)
+print("Tipo:", type(preprocess_layer))
+print("Forma de la salida:", preprocess_layer.output_shape)
+print("dtype:", preprocess_layer.dtype)
 
 #PREGUNTA8
 input()
