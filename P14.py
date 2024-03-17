@@ -53,6 +53,7 @@ for images, labels in train_dataset.take(1):
     plt.imshow(images[i].numpy().astype("uint8"))
     plt.title(class_names[labels[i]])
     plt.axis("off")
+plt.show()
 
 #  Generamos partición de test
 val_batches = tf.data.experimental.cardinality(validation_dataset)
@@ -136,5 +137,42 @@ history = cnn_model.fit(train_dataset,
 test_loss, test_accuracy = cnn_model.evaluate(test_dataset)
 print(f"Accuracy en el conjunto de test: {test_accuracy}")
 
+#PREGUNTA5
+# Plotear la curva de accuracy
+plt.plot(history.history['accuracy'], label='Accuracy de Entrenamiento')
+plt.plot(history.history['val_accuracy'], label='Accuracy de Validación')
+plt.title('Curvas de Accuracy')
+plt.xlabel('Épocas')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.show()
+
+print()
+
+#PREGUNTA6
+from tensorflow.keras.applications import VGG16
+
+# Cargar el modelo VGG16 pre-entrenado
+vgg16_model = VGG16(weights='imagenet', include_top=True)
+
+# Mostrar un resumen de las capas del modelo
+vgg16_model.summary()
 
 
+#PREGUNTA7
+from tensorflow.keras.applications.vgg16 import preprocess_input
+
+# Bloquear el entrenamiento del modelo
+vgg16_model.trainable = False
+
+# Extraer la capa de preprocesamiento
+preprocess_layer = vgg16_model.layers[0]
+
+# Verificar que la capa extraída sea la capa de preprocesamiento
+assert preprocess_layer.name == 'input_1'
+
+# Ver un resumen de la capa de preprocesamiento
+preprocess_layer.summary()
+
+#PREGUNTA8
+input()
