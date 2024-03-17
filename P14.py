@@ -11,6 +11,8 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense, Rescaling
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.callbacks import EarlyStopping
+
 
 _URL = 'https://storage.googleapis.com/download.tensorflow.org/example_images/flower_photos.tgz'
 path_to_zip = tf.keras.utils.get_file('flower_photos.zip', origin=_URL, untar=True)
@@ -76,39 +78,63 @@ print(IMG_SHAPE)
 
 
 # Pregunta 1
+def create_cnn_network():
+    # Crear el modelo
+    model = Sequential([
+            # Capa de Reescalado
+            Rescaling(1./255, input_shape=IMG_SHAPE),
+            # Capa convolucional
+            Conv2D(16, (3, 3), padding='same', strides=2, activation='relu'),
+            # Capa de MaxPooling
+            MaxPooling2D(pool_size=(2, 2)),
+            # Capa convolucional
+            Conv2D(32, (5, 5), padding='same', activation='relu'),
+            # Capa de MaxPooling
+            MaxPooling2D(),
+            # Capa convolucional
+            Conv2D(32, (5, 5), padding='same', activation='relu'),
+            # Capa de MaxPooling
+            MaxPooling2D(),
+            # Capa de Flatten
+            Flatten(),
+            # Capa densa
+            Dense(50, activation='relu'),
+            # Capa densa
+            Dense(50, activation='relu'),
+            # Capa densa
+            Dense(len(class_names), activation='softmax')  # Capa de salida
+    ])
 
-# Crear el modelo
-model = Sequential([
-        # Capa de Reescalado
-        Rescaling(1./255, input_shape=IMG_SHAPE),
-        # Capa convolucional
-        Conv2D(16, (3, 3), padding='same', strides=2, activation='relu'),
-        # Capa de MaxPooling
-        MaxPooling2D(pool_size=(2, 2)),
-        # Capa convolucional
-        Conv2D(32, (5, 5), padding='same', activation='relu'),
-        # Capa de MaxPooling
-        MaxPooling2D(),
-        # Capa convolucional
-        Conv2D(32, (5, 5), padding='same', activation='relu'),
-        # Capa de MaxPooling
-        MaxPooling2D(),
-        # Capa de Flatten
-        Flatten(),
-        # Capa densa
-        Dense(50, activation='relu'),
-        # Capa densa
-        Dense(50, activation='relu'),
-        # Capa densa
-        Dense(len(class_names), activation='softmax')  # Capa de salida
-])
+    return model
 
-
+# Creamos el model
+cnn_model = create_cnn_network()
 
 # Compilar el modelo
-model.compile(optimizer=Adam(),
+cnn_model.compile(optimizer=Adam(),
               loss='sparse_categorical_crossentropy',
               metrics=['accuracy'])
 
 # Resumen del modelo
-model.summary()
+cnn_model.summary()
+
+#PREGUNTA 2
+# Definir Early Stopping
+early_stopping = EarlyStopping(monitor='val_accuracy', 
+                               patience=5, 
+                               restore_best_weights=True)
+
+# Entrenar el modelo
+history = cnn_model.fit(train_dataset,
+                    validation_data=validation_dataset,
+                    epochs=50,
+                    callbacks=[early_stopping],
+                    batch_size=32)
+
+#PREGUNTA4
+# Evaluar el modelo en el conjunto de test
+test_loss, test_accuracy = cnn_model.evaluate(test_dataset)
+print(f"Accuracy en el conjunto de test: {test_accuracy}")
+
+
+
