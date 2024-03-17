@@ -167,7 +167,6 @@ from tensorflow.keras.applications.vgg16 import preprocess_input
 vgg16_model.trainable = False
 
 # Extraer la capa de preprocesamiento
-pre_layer = vgg16_model.
 preprocess_layer = vgg16_model.layers[0]
 
 # Verificar que la capa extraída sea la capa de preprocesamiento
